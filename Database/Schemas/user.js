@@ -3,7 +3,7 @@ const usersSchema = mongoose.Schema({
     last_name: { type: String, required: true},
     surname: { type: String, required: true},
     mobile: { type: Number, required: true},
-    email: { type: String, required: true,unique: true},
+    email: { type: String, required: true,unique: true, index: true},
     password: { type: String, required: true},
     profile_pic: { type: String, required: true },
     address : { type: String, required: true},

@@ -3,7 +3,7 @@ const postModel = new PostModel();
 
 class PostsController {
 
-
+  //CREATE POST
   async create(req, res) {
 
     const data = {
@@ -24,15 +24,21 @@ class PostsController {
     
   }
 
+  //GET POST
   async get(req, res) {
     const postId = req.params.id
-    console.log("PostsController -> get -> postId", postId)
 
     try {
       //CHECK IF POST ID AVAILABLE
       if(postId) {
 
         let getPost = await postModel.get(postId)
+         //CHECK IF POST EXISTS
+         if(!getPost.data) {
+          res.handler.notFound([], 'Post does not exist!');
+          return;
+        }
+
         if (getPost.status === STATUS_CODES.SUCCESS) {
           res.handler.success(getPost.data, 'Post Data');
           return;
@@ -46,9 +52,9 @@ class PostsController {
     }
   }
 
+  //EDIT POST
   async edit(req, res) {
     const authUserRole = req.userInfo.role
-    console.log("PostsController -> EIDT -> authUserRole", authUserRole)
     const postId = req.params.id
 
     if(!postId) {
@@ -70,7 +76,7 @@ class PostsController {
         if (postDetails.status === STATUS_CODES.SUCCESS && postDetails.data) {
           let editPost = await postModel.edit(postDetails.data, req.body);
           if (editPost.status === STATUS_CODES.SUCCESS) {
-            res.handler.success([], 'Post edited successfully!');
+            res.handler.success(editPost.data, 'Post edited successfully!');
             return;
           }
         }
@@ -97,7 +103,7 @@ class PostsController {
           
             let editPost = await postModel.edit(postDetails.data, req.body);
             if (editPost.status === STATUS_CODES.SUCCESS) {
-              res.handler.success([], 'Post edited successfully!');
+              res.handler.success(editPost.data, 'Post edited successfully!');
               return;
             }
         } 
@@ -110,9 +116,9 @@ class PostsController {
     }
   }
 
+  //DELETE POST
   async delete(req, res) {
     const authUserRole = req.userInfo.role
-    console.log("PostsController -> delete -> authUserRole", authUserRole)
     const postId = req.params.id
 
     if(ROLES.ADMIN === authUserRole) {

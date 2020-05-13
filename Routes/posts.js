@@ -7,7 +7,7 @@ const PostController = require('./../Controllers/post'),
 const Authenticator = require('./../MiddleWares/Authenticator/Authenticator'),
       authenticate =  (new Authenticator()).authenticate;
 
-      //VALIDATIONS
+//VALIDATIONS
 const { postValidations, validate } = require('./../MiddleWares/Validations')
 //ROUTES
 router.route('/:id?')

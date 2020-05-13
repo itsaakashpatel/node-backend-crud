@@ -2,6 +2,7 @@ const UserModel = require('./../Models/user');
 const userModel = new UserModel();
 
 class UsersController {
+  //LOGIN
   async login(req, res) {
     const data = req.body
     try {
@@ -28,6 +29,7 @@ class UsersController {
     
   }
 
+  //SIGN UP
   async signup(req, res) {
     // const { first_name, last_name, surname, email, mobile, password, profile_pic, address, dob, role, c_password} = req.body
     const data = req.body
@@ -43,15 +45,6 @@ class UsersController {
     }
   }
 
-  async allUsers(req, res) {
-    console.log("UsersController -> allUsers -> req", req.userRole)
-    try {
-      //ONlY ADMIN IS ALLOWED TO GET ALL USERS
-      
-    } catch (error) {
-      res.handler.serverError(error)
-    }
-  }
 }
 
 module.exports = UsersController;

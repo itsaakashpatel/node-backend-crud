@@ -1,6 +1,12 @@
 const userSchema = require('./../Database/Schemas/user')
 
 class User {
+
+  /**
+   * 
+   * @param {Object} data Data that need to be store in DB
+   */
+  
   async login(data) {
     try {
       //Find one user from DB
@@ -13,7 +19,6 @@ class User {
         let Encrypt = require('./../Configs/encrypt'),
           encrypt = new Encrypt(),
           isPasswordMatch = encrypt.compareEncryptEntity(data.password, user.password)
-          console.log("User -> login -> isPasswordMatch", isPasswordMatch)
         
         // If password doesn't match then no login should happen.
         if(isPasswordMatch) {
@@ -60,12 +65,18 @@ class User {
 
   }
 
+  /**
+   * 
+   * @param {Object} data Data that need to be store in DB
+   */
+
   async signUp(data) {
     let accessToken = require('./../Utils/helpers').generateAccessToken(),
         Encrypt = require('./../Configs/encrypt'),
         encrypt = new Encrypt(),
         encryptPassword = encrypt.encryptEntity(data.password)
     
+    //hash password and store token and password to DB
     data.password = encryptPassword
     data.authTokens = [accessToken]
     data.dob = new Date(data.dob)
@@ -94,9 +105,6 @@ class User {
     
   }
 
-  async getAllUsers(data) {
-
-  }
 }
 
 module.exports = User;

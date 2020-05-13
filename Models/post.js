@@ -1,9 +1,15 @@
 const postSchema = require('./../Database/Schemas/post')
 
 class Post {
+
+  /**
+   * 
+   * @param {Object} data Data that need to be store in DB
+   */
   async create(data) {
 
     try {
+      //Save new post
       let post = await new postSchema(data).save()
 
       //Return with Author details
@@ -19,6 +25,10 @@ class Post {
     }
   }
 
+  /**
+   * 
+   * @param {String} postId Id of post
+   */
   async get(postId) {
     try {
       let post = await postSchema.findById(mongoose.Types.ObjectId(postId))
@@ -37,6 +47,11 @@ class Post {
     }
   }
 
+  /**
+   * 
+   * @param {Object} post Post object 
+   * @param {Object} data Data object 
+   */
   async edit(post, data) {
     try {
       
@@ -54,6 +69,11 @@ class Post {
     }
 
   }
+
+  /**
+   * 
+   * @param {String} postId Id of post
+   */
   
   async delete(postId) {
     try {
@@ -69,10 +89,6 @@ class Post {
     }
   }
 
-  async getPostDetails(postId) {
-    return await postSchema.findById(mongoose.Types.ObjectId(postId))
-                            .populate('author')
-  }
 }
 
 module.exports = Post;

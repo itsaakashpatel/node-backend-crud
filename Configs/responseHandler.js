@@ -9,16 +9,8 @@ res.handler.success()
 res.handler.success({userName : "John"})
 res.handler.success({userName : "John"}, "User created")
 res.handler.success(undefined, "User created")
-res.handler.serverError(undefined, undefined, error object)
+res.handler.serverError( error object, undefined, undefined)
 
-for message you can pass simple string
-1. We have sent an email to your account
-or for with values like
-We have sent an email to %s,
-{
-    key : "TRANSLATION KEY",
-    value : "value of %s"
-}
 */
 
 class ResponseHandler {

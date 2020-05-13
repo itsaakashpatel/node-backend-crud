@@ -1,25 +1,27 @@
 const { check, validationResult } = require('express-validator')
+const path = require('path')
+const fs = require('fs')
+const moment = require('moment')
 
 //SCHEMAS
 const userSchema = require('./../Database/Schemas/user')
 
 const signUpValidations = () => {
   return [
-    // username must be an email
-    check('first_name').not()
-            .isEmpty()
+    check('first_name').trim().isLength({ min: 1 })
             .withMessage('First name is required'),
-    check('last_name').not()
-            .isEmpty()
+    check('last_name').trim().isLength({ min: 1 })
             .withMessage('Last name is required'),
-    check('surname').not()
-            .isEmpty()
+    check('surname').trim().isLength({ min: 1 })
             .withMessage('Surname is required'),
 
-    check('mobile').not()
-            .isEmpty()
-            .withMessage('Mobile is required'),
-    check('email', 'Email is required')
+    check('mobile').trim().isLength({ min: 1 })
+            .withMessage('Mobile is required')
+            .isNumeric()
+            .withMessage('Only numeric values are allowed'),
+
+    check('email').trim().isLength({ min: 1 })
+                  .withMessage('Email is required')
                   .isEmail().withMessage('Email is not valid').normalizeEmail().custom(async email => {
       //Check if email is available to register
       return await userSchema.findOne({ email: email}).then(user => {
@@ -29,29 +31,30 @@ const signUpValidations = () => {
       });
     }),
 
-    check('password', 'Password is required').not()
-                    .isEmpty()
+    check('password').trim().isLength({ min: 1 })
                     .withMessage('Password is required'),
 
-    check('c_password', 'Confirm password is required').custom((value, { req }) => {
-
-      if (value === "") throw new Error('Confirm password is required');
-      if (value !== req.body.password) {
+    check('c_password').trim().isLength({ min: 1 }).withMessage('Confirm Password is required').custom((value, { req }) => {
+      if (value && value !== req.body.password) {
         throw new Error('Password confirmation does not match password');
       } 
-      // Indicates the success of this synchronous custom validator
       return true;
     }),
 
-    check('address').not()
-                    .isEmpty()
+    check('address').trim().isLength({ min: 1 })
                     .withMessage('Address is required'),
-    check('profile_pic').not()
-                    .isEmpty()
+    check('profile_pic').trim().isLength({ min: 1 })
                     .withMessage('Profile pic is required'),
-    check('dob').not()
-                .isEmpty()
-                .withMessage(' Date of birth is required'),
+
+    check('dob').trim().isLength({ min: 1 }).withMessage('Date of birth is required')
+                .custom(date => {
+                  if(date && !moment(date, 'YYYY-MM-DD', true).isValid()) {
+                    throw new Error('Date of birth format is invalid');
+                  }
+                  return true
+                })
+                .withMessage(' Date of birth format is not valid'),
+
     check('role', 'Role is required')
                 .isIn([ROLES.ADMIN, ROLES.USER]).withMessage('Role value is not valid!')
   ]
@@ -59,24 +62,22 @@ const signUpValidations = () => {
 
 const loginValidations = () => {
   return [
-    check('email', 'Email is required')
-                    .isEmail().withMessage('Email is not valid').normalizeEmail(),
+    check('email').trim().isLength({ min: 1 })
+    .withMessage('Email is required')
+    .isEmail().withMessage('Email is not valid').normalizeEmail(),
 
-    check('password', 'Password is required').not()
-                    .isEmpty()
+    check('password').trim().isLength({ min: 1 })
                     .withMessage('Password is required'),
   ]
 }
 
 const postValidations = () => {
   return [
-    check('title', 'Title is required').not()
-    .isEmpty()
-    .withMessage('Title is required'),
+    check('title').trim().isLength({ min: 1 })
+                  .withMessage('Title is required'),
 
-    check('body', 'body is required').not()
-                    .isEmpty()
-                    .withMessage('body is required'),
+    check('body').trim().isLength({ min: 1 })
+                  .withMessage('body is required'),
   ]
 }
 
@@ -86,6 +87,14 @@ const validate = (req, res, next) => {
   if (errors.isEmpty()) {
     return next()
   }
+
+  //Check if profile pic is set, if yes then remove it first
+  if(req.body.profile_pic) {
+    let getFileFromLocal = path.join( __dirname , './../Assets/profile_pics/' + req.body.profile_pic)
+    fs.unlinkSync(getFileFromLocal)
+    console.log(`${req.body.profile_pic} Profile Pic is removed`)
+  }
+
   const extractedErrors = []
   errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }))
 

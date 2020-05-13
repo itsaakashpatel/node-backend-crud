@@ -18,7 +18,7 @@ const server = http.createServer(app)
 app.use(bodyParser.json()) // ALLOW APPLICATION JSON
 app.use(bodyParser.urlencoded({ extended: false })) // ALLOW URL ENCODED PARSER
 app.use(cors()) // ALLOWED ALL CROSS ORIGIN REQUESTS
-app.use(express.static(__dirname + '/Assets')); // SERVE STATIC IMAGES FROM ASSETS FOLDER
+app.use(express.static(__dirname + '/Assets')); // SERVE IMAGES FROM ASSETS FOLDER
 
 // ------------------------    RESPONSE HANDLER    -------------------
 app.use((req, res, next) => {
